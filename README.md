@@ -11,6 +11,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 ## 進度
 
 - [x] Day 01 — 環境建置,跑通第一支 JavaScript(`day01/hello.html`)
+- [x] Day 02 — 變數與資料型別:let/const、SyntaxError vs TypeError、typeof(`day02/day2.html`)
 
 ## 技術棧
 

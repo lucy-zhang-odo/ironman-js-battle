@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    let hp = 100;
+    const heroName = "勇者";
+    // 故意試試看改 const 會怎樣
+    let isAlive = true;    //IDE沒有報錯
+    heroName = "初心者";
+    const heroName = "新生兒";   //IDE有報錯
+    console.log(heroName, "的 HP 是", hp);
+    console.log(typeof hp);
+    console.log(typeof heroName);
+    console.log(typeof isAlive);
+    //直接放console.log 在網頁F12內可以直接看到設定的數值
+    
+
+  </script>
+</body>
+</html>
