@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    const arr = ['你', '我', '他'];
+
+    console.log(arr);   //['你', '我', '他'];
+    console.log([...arr]);   // 複製一份新陣列,之後原本的 arr 再怎麼改也不影響這份複製品
+    console.log(JSON.stringify(arr));   // 轉成字串,鎖住當下的值,之後怎麼改都不會影響這行紀錄
+    arr[0] = '0';
+    arr[1] = '1';
+    arr[2] = '2';
+
+    console.log(arr);  // ['0', '1', '2']
+
+
+
+
+    const hero = { name: "勇者", hp: 100, atk: 20, def: 5 };
+    const enemy = { name: "小怪", hp: 60, atk: 15, def: 3 };
+
+    console.log(hero.name, "的 HP:", hero.hp);
+    console.log(enemy.name, "的 HP:", enemy.hp);
+
+    // 修改物件內部屬性,驗證 const 物件能不能這樣做
+    hero.hp = hero.hp - 30;
+    console.log("勇者受傷後 HP:", hero.hp);
+    // 新增一個屬性
+    hero.skill = "火球術";
+    console.log("新增後:", hero);
+
+    // 刪除一個屬性
+    delete hero.atk;
+    console.log("刪除 atk 後:", hero);
+
+    // 用迴圈逐一清空,每次都印出剩下多少
+    const keys = Object.keys(hero);
+    for (let i = 0; i < keys.length; i++) {
+        delete hero[keys[i]];
+        console.log(`刪除 ${keys[i]} 後,剩下:`, hero);
+    }
+
+    console.log("最終結果:", hero);  // 應該會是 {}
+    
+    hero = { name: "復活勇者" };  // 驗證整個換掉會噴 TypeError,這是檔案最後一行,不影響前面的結果
+  </script>
+</body>
+</html>
