@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function checkStatus(hp) {
+      if (hp <= 0) {
+        console.log(hp, "→ 勇者陣亡");
+      } else if (hp < 30) {
+        console.log(hp, "→ 身受重傷");
+      } else {
+        console.log(hp, "→ 狀態正常");  // 註:30 本身不算重傷,30 以上都算正常
+      }
+    }
+
+    checkStatus(100);
+    checkStatus(20);
+    checkStatus(0);
+    checkStatus(-10);  // 故意試試看負數
+    checkStatus(30);
+
+  </script>
+</body>
+</html>

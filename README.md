@@ -13,6 +13,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 01 — 環境建置,跑通第一支 JavaScript(`day01/hello.html`)
 - [x] Day 02 — 變數與資料型別:let/const、SyntaxError vs TypeError、typeof(`day02/day2.html`)
 - [x] Day 03 — 字串與模板字串:`+` 拼接 vs 模板字串(`day03/day3.html`)
+- [x] Day 04 — if/else 條件判斷:`===` vs `==`、邊界值測試(`day04/day4.html`)
 
 ## 技術棧
 
