@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    /*
+    // 練習 1:內讀外 OK,外問內炸
+    let heroHp = 100;
+
+    function heal(amount) {
+      heroHp = heroHp + amount;    // heroHp 不是參數,所以往外找,改到的是本尊
+      let healed = heroHp;
+      console.log("治療後:", healed);
+    }
+
+    heal(30);
+    console.log("本尊:", heroHp);   // 130 — 全域真的被改了
+    
+    function secret() {
+      const hidden = "暗號";
+      console.log(hidden);
+    }
+      
+    secret();
+    console.log(hidden);  // 測試 A:放開這行 → ReferenceError: hidden is not defined
+                         // 而且從這行開始,後面的程式全部不會跑
+   
+    */                          
+    let s = "暗號"; s[0] = "明"; console.log(s);
+
+                              
+    // 練習 2:var 和 let 的世紀對決
+    for (var i = 0; i < 3; i++) {
+      console.log(i);
+    }
+    console.log("var i 迴圈後:", i);   // var 活過了迴圈
+
+    let k;
+    for (k = 0; k < 3; k++) {
+      console.log(k);
+    }
+    console.log("let k 迴圈後:", k);   // 宣告搬到外面才問得到(Day 7 的 j 同款)
+
+    // 練習 3:重複宣告
+    var a = 1;
+    var a = 2;      // var 允許重複宣告,不報錯
+    console.log("var a:", a);
+
+    let b = 1;
+    b = 2;          // 重新賦值:合法
+    console.log("let b(重新賦值):", b);
+    //let b = 3;   // 測試 B:放開這行 → SyntaxError,整支程式一行都不會執行
+
+    
+  </script>
+</body>
+</html>
