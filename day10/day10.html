@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+  <h1>勇者 vs 小怪</h1>
+  <p id="heroHp">勇者 HP: ?</p>
+  <p id="enemyHp">小怪 HP: ?</p>
+  <p id="log">戰鬥紀錄</p>
+
+  <!-- script 必須放在這些 <p> 後面。搬到 <head> 或 <h1> 上面試過:
+       getElementById 會回傳 null,下一行設 .textContent 就噴
+       Uncaught TypeError: Cannot set properties of null (setting 'textContent') -->
+  <script>
+    const hero = { name: "勇者", hp: 100, atk: 20, def: 5 };
+    const enemy = { name: "小怪", hp: 60, atk: 15, def: 3 };
+
+    function calcDamage(atk, def) {
+      return Math.max(1, atk - def);
+    }
+
+    // 練習 1:抓元素,把物件的資料搬上畫面
+    const heroHpText = document.getElementById("heroHp");
+    const enemyHpText = document.getElementById("enemyHp");
+    const logText = document.querySelector("#log");   // 兩種寫法都試
+
+    heroHpText.textContent = `${hero.name} HP: ${hero.hp}`;
+    enemyHpText.textContent = `${enemy.name} HP: ${enemy.hp}`;
+
+    // 練習 2:打一回合,畫面跟著更新
+    const damage = calcDamage(hero.atk, enemy.def);
+    enemy.hp = enemy.hp - damage;
+
+    enemyHpText.textContent = `${enemy.name} HP: ${enemy.hp}`;
+    logText.textContent = `${hero.name} 造成 ${damage} 點傷害!`;
+
+    // 練習 3:看看抓到的東西長什麼樣
+    console.log(heroHpText);          // <p id="heroHp">勇者 HP: 100</p>
+    console.log(typeof heroHpText);   // object — 網頁元素就是物件
+  </script>
+</body>
+</html>

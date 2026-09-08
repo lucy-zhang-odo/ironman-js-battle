@@ -17,6 +17,9 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 05 — 陣列與索引:0-based vs 1-based、[[Prototype]] 初探(`day05/day5.html`)
 - [x] Day 06 — 物件:const 內容可改、新增/刪除/清空、Console 活參照陷阱(`day06/day6.html`)
 - [x] Day 07 — 迴圈:for 三段式、while、無窮迴圈親身經歷、ReferenceError 與 shadowing(`day07/day7.html`)
+- [x] Day 08 — 函式:參數與 return、一個函式只做一件事、Math.max 設傷害下限(`day08/day8.html`)
+- [x] Day 09 — 作用域:內讀外/外問內、var 為何被勸退、重複宣告 vs 重新賦值(`day09/day9.html`)
+- [x] Day 10 — DOM:getElementById/querySelector、textContent、script 位置與 null(`day10/day10.html`)
 
 ## 技術棧
 
