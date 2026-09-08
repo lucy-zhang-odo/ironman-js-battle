@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    const hero = { name: "勇者", hp: 100, atk: 20, def: 5 };
+    const enemy = { name: "小怪", hp: 60, atk: 15, def: 3 };
+
+    // 傷害計算機:最少 1 點——再弱的攻擊也至少擦傷,
+    // 之後可以搭配流血武器,讓攻擊力不足的玩家也磨得贏終極魔王
+    function calcDamage(atk, def) {
+      return Math.max(1, atk - def);
+    }
+
+    // 練習:return 和 console.log 的差別
+    function logDamage(atk, def) {
+      console.log(atk - def);   // 只印,沒有 return
+    }
+    const result1 = calcDamage(20, 3);
+    const result2 = logDamage(20, 3);
+    console.log("result1:", result1, "/ result2:", result2);
+
+    // 報狀態:工作是印,不需要 return
+    function checkStatus(hp) {
+      if (hp <= 0) {
+        console.log(hp, "→ 勇者陣亡");
+      } else if (hp < 30) {
+        console.log(hp, "→ 身受重傷");
+      } else {
+        console.log(hp, "→ 狀態正常");  // 註:30 本身不算重傷,30 以上都算正常
+      }
+    }
+
+    // 攻擊流程:呼叫函式 → 更新物件 → 檢查
+    const damage = calcDamage(enemy.atk, hero.def);   // 小怪打勇者
+    console.log(`${enemy.name} 的攻擊力 ${enemy.atk} ${hero.name} 的防禦力 ${hero.def}`);
+    hero.hp = hero.hp - damage;
+    checkStatus(hero.hp);
+
+    // 以下實驗已收進文章:兩個同名函式不會報錯,後面的宣告會整個蓋掉前面的(提升 hoisting),
+    // 所以兩次呼叫都印 1,不是預期的 0 和 1。正式程式碼不該這樣寫,留在這裡當紀念:
+    // function calcDamage(atk, def) {
+    //   if (atk - def <= 0) {
+    //     return 0;
+    //   }
+    //   return atk - def;
+    // }
+    // console.log(calcDamage(15, 20));   // 兩次都印 1,不是 0
+    
+  </script>
+</body>
+</html>
