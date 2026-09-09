@@ -20,6 +20,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 08 — 函式:參數與 return、一個函式只做一件事、Math.max 設傷害下限(`day08/day8.html`)
 - [x] Day 09 — 作用域:內讀外/外問內、var 為何被勸退、重複宣告 vs 重新賦值(`day09/day9.html`)
 - [x] Day 10 — DOM:getElementById/querySelector、textContent、script 位置與 null(`day10/day10.html`)
+- [x] Day 11 — 事件:addEventListener、勝負判定、資料與畫面不同步(`day11/day11.html`)
 
 ## 技術棧
 

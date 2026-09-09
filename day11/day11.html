@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>勇者 vs 小怪</h1>
+  <p id="heroHp">勇者 HP: ?</p>
+  <p id="enemyHp">小怪 HP: ?</p>
+  <p id="log">按下攻擊開始戰鬥</p>
+  <button id="attackBtn">攻擊!</button>
+
+  <script>
+    const hero = { name: "勇者", hp: 100, atk: 20, def: 5 };
+    const enemy = { name: "小怪", hp: 60, atk: 15, def: 3 };
+
+    function calcDamage(atk, def) {
+      return Math.max(1, atk - def);
+    }
+
+    const heroHpText = document.getElementById("heroHp");
+    const enemyHpText = document.getElementById("enemyHp");
+    const logText = document.getElementById("log");
+    const attackBtn = document.getElementById("attackBtn");
+
+    // 把「畫面更新」抽成一個函式(Day 8 的一個函式做一件事)
+    function updateScreen() {
+      heroHpText.textContent = `${hero.name} HP: ${hero.hp}`;
+      enemyHpText.textContent = `${enemy.name} HP: ${enemy.hp}`;
+    }
+
+    // 攻擊:一次點擊 = 一個回合
+    function attack() {
+      if (enemy.hp <= 0) {
+        logText.textContent = `${hero.name}請不要對${enemy.name}屍體動手!`;
+        return;
+      }
+      const damage = calcDamage(hero.atk, enemy.def);
+      enemy.hp = enemy.hp - damage;
+
+      if (enemy.hp <= 0) {
+        enemy.hp = 0
+        attackBtn.textContent= `鞭屍!!`;
+        logText.textContent = `${enemy.name}被擊敗了!`;
+      }else {
+        logText.textContent = `${hero.name} 造成 ${damage} 點傷害!`;
+      }
+      // console.log(logText);              // 活參照:文字會跟著畫面變,紀錄不可信
+      console.log(logText.textContent);       // 字串:凍結當下的訊息
+      updateScreen();                          // 資料改完,一定要更新畫面
+      console.log("目前小怪 HP:", enemy.hp);
+    }
+
+    updateScreen();                                  // 開場先顯示一次
+    attackBtn.addEventListener("click", attack);     // 掛上監聽器
+  </script>
+</body>
+</html>
