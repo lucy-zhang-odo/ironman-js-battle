@@ -23,6 +23,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 11 — 事件:addEventListener、勝負判定、資料與畫面不同步(`day11/day11.html`)
 - [x] Day 12 — 第一階段回顧 + [JavaScript 速查表](CHEATSHEET.md)
 - [x] Day 13 — innerHTML vs textContent:XSS 實測、戰鬥訊息視覺化(`day13/day13.html`)
+- [x] Day 14 — 用 JS 改樣式:style 駝峰命名、classList、四階段配色與陰影計數器(`day14/day14.html`)
 
 ## 技術棧
 
