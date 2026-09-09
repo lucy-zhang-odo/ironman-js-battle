@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>勇者 vs 小怪</h1>
+  <p id="heroHp">勇者 HP: ?</p>
+  <p id="enemyHp">小怪 HP: ?</p>
+  <p id="log">按下攻擊開始戰鬥</p>
+  <button id="attackBtn">攻擊!</button>
+  <hr>
+  <p>實驗區:</p>
+  <p id="test1"></p>
+  <p id="test2"></p>
+
+  <script>
+    const hero = { name: "勇者", hp: 100, atk: 20, def: 5 };
+    const enemy = { name: "小怪", hp: 60, atk: 15, def: 3 };
+
+    function calcDamage(atk, def) {
+      return Math.max(1, atk - def);
+    }
+
+    const heroHpText = document.getElementById("heroHp");
+    const enemyHpText = document.getElementById("enemyHp");
+    const logText = document.getElementById("log");
+    const attackBtn = document.getElementById("attackBtn");
+    const test1 = document.getElementById("test1");
+    const test2 = document.getElementById("test2");
+
+    function updateScreen() {
+      heroHpText.textContent = `${hero.name} HP: ${hero.hp}`;
+      enemyHpText.textContent = `${enemy.name} HP: ${enemy.hp}`;
+    }
+
+    function attack() {
+      if (enemy.hp <= 0) {
+        logText.textContent = `${hero.name}請不要對${enemy.name}屍體動手!`;
+        return;
+      }
+
+      const damage = calcDamage(hero.atk, enemy.def);
+      enemy.hp = enemy.hp - damage;
+
+      if (enemy.hp <= 0) {
+        enemy.hp = 0;
+        attackBtn.innerHTML = `<button style="background-color: #ff0000; color: #ffffff; padding: 10px 20px; font-size: 16px;"> 鞭屍!! </button>`;
+        logText.innerHTML = `<b>${enemy.name}</b> 被擊敗了!`;
+      } else {
+        // 升級版戰鬥訊息:名字粗體、傷害數字變紅
+        // 這裡的字串完全由我自己寫死,沒有任何使用者輸入,所以用 innerHTML 是安全的
+        logText.innerHTML =
+          `<b>${hero.name}</b> 造成 <span style="color:red">${damage}</span> 點傷害!`;
+      }
+
+      updateScreen();
+      console.log(logText.textContent);
+    }
+
+    updateScreen();
+    attackBtn.addEventListener("click", attack);
+
+    // ---- 以下是今天的實驗紀錄 ----
+
+    // 實驗 1:同一段字串,兩種屬性
+    const str = "<b>粗體測試</b> 和 <span style='color:red'>紅色測試</span>";
+    test1.textContent = str;   // 原樣顯示標籤
+    test2.innerHTML = str;     // 標籤被解析:真的變粗體、變紅色
+
+    // 實驗 2(已收進文章):這行原本寫在 logText 還沒宣告的位置,
+    // 噴了 ReferenceError: logText is not defined,把後面的實驗 3 整個擋掉
+
+    // 實驗 3:模擬 XSS——放開下面三行會跳出 alert,
+    // 而且 innerHTML 插入的那張破圖在畫面上完全隱形:攻擊執行了卻沒有痕跡
+    // const evilName = `<img src=x onerror="alert('我控制了你的網頁')">`;
+    // test1.textContent = evilName;   // 安全:原樣顯示那串字
+    // test2.innerHTML = evilName;     // 危險:程式碼被執行
+  </script>
+</body>
+</html>
