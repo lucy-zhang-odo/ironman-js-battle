@@ -1,4 +1,4 @@
-# JavaScript 速查表(Day 1–11)
+# JavaScript 速查表(Day 1–15)
 
 依「我想做什麼」分類,不是依語法分類——卡住時從這裡找比翻文章快。
 
@@ -46,10 +46,19 @@ hero = { hp: 50 };     // ✗ TypeError: Assignment to constant variable.
 |---|---|
 | 拼接 | `"勇者" + "的 HP:" + hp` |
 | **模板字串(推薦)** | `` `${hero.name} 的 HP: ${hero.hp}` `` |
+| 去掉前後空白 | `s.trim()` |
+| 算字數 | `s.length` |
+| 檢查有沒有包含某片段 | `s.includes("<")` → true / false |
+| 換掉所有出現的片段 | `s.replaceAll("<", "&lt;")` |
+| 字串轉數字 | `Number(s)`(轉不出來會得到 `NaN`) |
 
 模板字串用**反引號**(鍵盤左上角 `` ` ``),變數包在 `${}` 裡。少了 `$` 就不會被解析,會原樣印出 `{hero.hp}`。
 
 字串是**原始值**,不可變:`s[0] = "明"` 不報錯也不生效。
+
+⚠️ `+` 遇到字串就變成拼接,不是加法:`"1" + 1` 是 `"11"`,但 `"50" - 3` 卻是 `47`(減號沒有拼接功能,會偷偷轉數字)。**加號和減號的行為不一致**。
+
+⚠️ 字串 `"1"` 和數字 `1` 在主控台印出來一樣。**數字是藍色、字串是白色**,或用 `typeof` 確認。
 
 ---
 
@@ -171,7 +180,16 @@ const box = {}; function f() { box.x = "值"; }  // const 容器,往裡面填
 | 用 CSS 選擇器抓 | `document.querySelector("#heroHp")` |
 | 改文字 | `el.textContent = "HP: 100";` |
 | 改按鈕文字 | `btn.textContent = "鞭屍!!";` |
-| 停用按鈕 | `btn.disabled = true;` |
+| 停用按鈕/輸入框 | `btn.disabled = true;` |
+| **讀輸入框的值** | `input.value`(永遠是字串!) |
+| 改單一樣式 | `el.style.backgroundColor = "#ff0000";` |
+| 加/移除/切換 class | `el.classList.add("danger")` / `.remove()` / `.toggle()` |
+| 檢查有沒有某 class | `el.classList.contains("danger")` |
+| 放 HTML 標籤進去 | `el.innerHTML = "<b>粗體</b>";`(**有使用者資料一定要先轉義**) |
+
+**`style` 的 CSS 屬性名一律改駝峰**:`background-color` → `backgroundColor`、`font-size` → `fontSize`。寫成 `style.background-color` 會噴 `SyntaxError: Invalid left-hand side in assignment`(JS 把它讀成減法)。
+
+**`style` vs `classList`**:改一兩個屬性用 `style`;管理「狀態」用 `classList`(樣式集中在 CSS,JS 只決定現在是什麼狀態)。
 
 抓到的元素 `typeof` 是 `object`——**改網頁 = 改物件屬性**。
 
@@ -200,6 +218,36 @@ attackBtn.addEventListener("click", attack);
 
 ---
 
+## 使用者輸入:安全與驗證
+
+**核心原則:同一份使用者資料可能有多個出口,每一個都要檢查。**
+
+```js
+// 出口 A:純文字 → textContent 天生安全,不需轉義
+heroHpText.textContent = `${hero.name} HP: ${hero.hp}`;
+
+// 出口 B:innerHTML → 使用者資料一定要先轉義
+function escapeHtml(str) {
+  return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+logText.innerHTML = `<b>${escapeHtml(hero.name)}</b> 造成 ${damage} 點傷害!`;
+```
+
+驗證的標準流程:
+
+```js
+const name = nameInput.value.trim();      // 1. 去空白
+if (name === "") { /* 拒絕 */ return; }    // 2. 空值
+if (name.length > 10) { /* 拒絕 */ return; }  // 3. 長度
+```
+
+| 觀念 | 說明 |
+|---|---|
+| HTML 的 `maxlength` | 只負責體驗,DevTools 就能繞過——JS 檢查才是把關 |
+| 前端驗證 | 一律可被繞過,有伺服器的話**後端必須再驗一次** |
+| 白名單 vs 黑名單 | 「只允許我列出的」比「禁止我想到的壞東西」可靠 |
+| **註解會過期** | 「這裡沒有使用者輸入所以安全」可能明天就不成立 |
+
 ## 錯誤訊息對照表
 
 | 錯誤訊息 | 意思 | 常見原因 |
@@ -211,10 +259,23 @@ attackBtn.addEventListener("click", attack);
 | `TypeError: Assignment to constant variable.` | 想整個換掉 const | `const x = 1; x = 2;` |
 | `TypeError: Cannot set properties of null` | 對 `null` 設屬性 | `getElementById` 沒抓到(script 位置太前面) |
 | `TypeError: x is not a function` | 把不是函式的東西當函式呼叫 | 名字打錯、或它其實是別的型別 |
+| `SyntaxError: Invalid left-hand side in assignment` | 賦值的左邊不是可被賦值的東西 | `style.background-color = ...`(被讀成減法) |
 
 **SyntaxError vs 其他錯誤**:
-- **SyntaxError** 在「讀的階段」被擋下 → **整支程式一行都不執行**
+- **SyntaxError** 在「讀的階段」被擋下 → **它所在的那個 `<script>` 區塊一行都不執行**(同一頁其他 script 區塊不受影響)
 - **ReferenceError / TypeError** 是執行期發生 → **從出錯那行開始,後面全部不跑**(前面的有跑)
+
+## 幾個 JS 的怪癖(記住比理解重要)
+
+| 寫法 | 結果 | 說明 |
+|---|---|---|
+| `typeof null` | `"object"` | 1995 年的歷史包袱 |
+| `typeof NaN` | `"number"` | 「不是數字」的型別是數字 |
+| `NaN === NaN` | `false` | NaN 跟任何東西比較都是 false |
+| `0 == false` | `true` | 型別被偷偷轉換,所以永遠用 `===` |
+| `"1" + 1` | `"11"` | 加號遇字串變拼接 |
+| `"50" - 3` | `47` | 減號沒有拼接功能,偷偷轉數字 |
+| 程式碼寫在 script 最外層 | 只在載入時跑一次 | 要即時的值就寫在事件函式裡 |
 
 ---
 
@@ -228,3 +289,5 @@ attackBtn.addEventListener("click", attack);
 | `addEventListener("click", attack())` 點了沒反應 | 掛上去的是 `undefined` |
 | 資料改了但畫面不動 | 忘記呼叫更新畫面的函式 |
 | `console.log(元素)` 顯示的文字跟當時不符 | 活參照 |
+| 使用者輸入的標籤被解析了 | 某個出口用了 `innerHTML` 而沒轉義(而且不會報錯) |
+| 一顆按鈕塞進另一顆按鈕還能點 | 事件冒泡救了它,但 HTML 結構是違法的 |
