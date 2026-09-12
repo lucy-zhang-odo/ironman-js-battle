@@ -25,6 +25,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 13 — innerHTML vs textContent:XSS 實測、戰鬥訊息視覺化(`day13/day13.html`)
 - [x] Day 14 — 用 JS 改樣式:style 駝峰命名、classList、四階段配色與陰影計數器(`day14/day14.html`)
 - [x] Day 15 — 表單與輸入:input.value、輸入驗證、找到並修補一個真實 XSS 漏洞(`day15/day15.html`)
+- [x] Day 16 — 亂數:Math.random、整數亂數公式、用統計驗證不確定系統(`day16/day16.html`)
 
 ## 技術棧
 
