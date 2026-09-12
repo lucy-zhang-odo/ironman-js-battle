@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .danger { color: red; font-weight: bold; }
+  .dead   { color: gray; text-decoration: line-through; }
+  .revenge-btn {
+    background-color: #ff0000; color: #ffffff;
+    padding: 10px 20px; font-size: 16px;
+  }
+  .warning { color: #c00000; font-weight: bold; }
+</style>
+</head>
+<body>
+  <h1>勇者 vs 小怪</h1>
+
+  <p>
+    <input type="text" id="nameInput" placeholder="輸入勇者名字" maxlength="10">
+    <button id="startBtn">出征!</button>
+  </p>
+
+  <p id="heroHp">勇者 HP: ?</p>
+  <p id="enemyHp">小怪 HP: ?</p>
+  <p id="log">請先輸入名字</p>
+  <button id="attackBtn">攻擊!</button>
+
+  <script>
+    // maxHp:昨天記下的技術債,今天還了。血量比例的判斷不再寫死數字
+    const hero  = { name: "勇者", hp: 100, maxHp: 100, atk: 20, def: 5 };
+    const enemy = { name: "小怪", hp: 60,  maxHp: 60,  atk: 15, def: 3 };
+
+    let whipCount = 0;         // 鞭屍次數
+    let battleStarted = false; // 戰鬥是否已開始(開始後鎖定改名)
+
+    const nameInput   = document.getElementById("nameInput");
+    const startBtn    = document.getElementById("startBtn");
+    const heroHpText  = document.getElementById("heroHp");
+    const enemyHpText = document.getElementById("enemyHp");
+    const logText     = document.getElementById("log");
+    const attackBtn   = document.getElementById("attackBtn");
+
+    function calcDamage(atk, def) {
+        const base = Math.max(1, atk - def);
+        const variance = randomInt(-3, 3);        // 浮動 ±3
+        return Math.max(1, base + variance);      // 還是保底 1 點
+    }
+
+    // 轉義:把 HTML 的特殊字元換成「看起來一樣但不會被當標籤」的寫法。
+    // 任何要塞進 innerHTML 的使用者資料,都必須先經過這裡。
+    function escapeHtml(str) {
+      return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    function updateScreen() {
+      // 純文字的出口:textContent 天生安全,不需要轉義
+      heroHpText.textContent  = `${hero.name} HP: ${hero.hp}`;
+      enemyHpText.textContent = `${enemy.name} HP: ${enemy.hp}`;
+
+      // 血量比例判斷:改用 maxHp 計算,換成滿血 500 的魔王也照樣正確
+      if (enemy.hp <= enemy.maxHp * 0.3) {
+        enemyHpText.classList.add("danger");
+        document.body.style.backgroundColor = "#a89798";
+      } else {
+        enemyHpText.classList.remove("danger");
+      }
+
+      if (enemy.hp <= 0) {
+        enemyHpText.classList.remove("danger");
+        enemyHpText.classList.add("dead");
+        document.body.style.backgroundColor = "#000000";
+        document.body.style.color = "#ffffff";
+      }
+    }
+
+    // 用迴圈疊出連續的長條陰影;基礎那圈黑邊讓紅按鈕在紅背景上看得見
+    function updateWhipShadow() {
+      const parts = ["0 0 0 2px rgba(0, 0, 0, 0.6)"];
+      for (let i = 1; i <= whipCount; i++) {
+        parts.push(`${i * 8}px 0 0 rgba(0, 0, 0, 0.45)`);
+      }
+      attackBtn.style.boxShadow = parts.join(", ");
+    }
+
+    function startGame() {
+      const name = nameInput.value.trim();   // trim() 去掉前後空白
+
+      // 驗證 1:空值(只打空白鍵的情況,trim 之後也會變空字串)
+      if (name === "") {
+        logText.textContent = "請先輸入名字!";
+        logText.classList.add("warning");
+        return;
+      }
+
+      // 驗證 2:長度上限(HTML 的 maxlength 只是體驗,可被 DevTools 繞過,這裡才是真的把關)
+      if (name.length > 10) {
+        logText.textContent = `名字太長了(${name.length} 字),請縮短到 10 字以內`;
+        logText.classList.add("warning");
+        return;
+      }
+
+      logText.classList.remove("warning");
+      hero.name = name;   // 存進來的是原始輸入,乾淨的資料
+
+      logText.textContent = `勇者 ${hero.name} 出征!`;
+      updateScreen();
+
+      // 這幾行搬進函式裡才會拿到「當下」的輸入值。
+      // 原本寫在最外層,只在頁面載入時跑一次,永遠印出空字串
+      console.log("玩家輸入的:", nameInput.value, "型別:", typeof nameInput.value);
+      console.log("字串相加:", nameInput.value + 1, "/ 轉數字再加:", Number(nameInput.value) + 1);
+      console.log("兩者型別:", typeof (nameInput.value + 1), typeof (Number(nameInput.value) + 1));
+    }
+
+    function attack() {
+      // 第一次攻擊就鎖定改名:名字是開局設定,不該中途更換
+      if (!battleStarted) {
+        battleStarted = true;
+        nameInput.disabled = true;
+        startBtn.disabled = true;
+      }
+
+      if (enemy.hp <= 0) {
+        whipCount = whipCount + 1;
+        logText.textContent = `${hero.name}請不要對${enemy.name}屍體動手!(第 ${whipCount} 下)`;
+        document.body.style.backgroundColor = "#ff0000";
+        updateWhipShadow();
+        return;
+      }
+
+      const damage = calcDamage(hero.atk, enemy.def);
+      enemy.hp = enemy.hp - damage;
+
+      if (enemy.hp <= 0) {
+        enemy.hp = 0;
+        attackBtn.textContent = "鞭屍!!";
+        attackBtn.classList.add("revenge-btn");
+        updateWhipShadow();
+        logText.innerHTML = `<b>${escapeHtml(enemy.name)}</b> 被擊敗了!`;
+      } else {
+        // 這裡是 innerHTML,而 hero.name 是使用者輸入 → 一定要先 escapeHtml。
+        // Day 13 寫這行時 hero.name 還是我寫死的「勇者」,今天加了輸入框之後前提就變了,
+        // 測試時輸入 <b>hl</b> 真的讓名字變成粗體 → 這是漏洞,不是功能。
+        logText.innerHTML =
+          `<b>${escapeHtml(hero.name)}</b> 造成 <span style="color:red">${damage}</span> 點傷害!`;
+      }
+
+      updateScreen();
+      console.log(logText.textContent);
+    }
+
+    updateScreen();
+    startBtn.addEventListener("click", startGame);
+    attackBtn.addEventListener("click", attack);
+
+    function randomInt(min, max) {
+      let x = Math.random();
+      // console.log(x);   // 驗證時用的。這個函式跑了 1000 次 → 主控台被灌了 1000 行,驗完就該關掉
+      return Math.floor(x * (max - min + 1)) + min;
+    }
+
+    
+    // ==== 以下是今天的計時器實驗紀錄。四個都已收進文章,平時保持註解狀態 ====
+
+    /*
+    // 練習 1:感受「不會卡住」
+    console.log("A");
+    setTimeout(() => { console.log("B(1 秒後)"); }, 1000);
+    console.log("C");
+    // 我猜 A → C → B,結果正確。
+    // setTimeout 不是「停在這裡等一秒」,而是預約一件事,程式立刻往下跑
+
+    // 練習 2:setTimeout 延遲 0 毫秒
+    console.log("1");
+    setTimeout(() => { console.log("2(延遲 0 毫秒)"); }, 0);
+    console.log("3");
+    // 我猜 1 → 2 → 3,實際是 1 → 3 → 2 —— 猜錯了。
+    // 延遲 0 毫秒不代表插隊:它被排到「待辦清單」最後面,
+    // 必須等現在這段程式從頭跑完才會執行。這個機制叫事件迴圈(event loop)
+
+    // 練習 3:會自己停的計時器(倒數)
+    let count = 3;
+    const timerId = setInterval(() => {
+      console.log("倒數:", count);
+      count = count - 1;
+      if (count === 0) {      // 寫 count <= 0 會更安全:萬一跳過 0 就永遠停不了
+        clearInterval(timerId);
+        console.log("時間到!");
+      }
+    }, 1000);
+    console.log(timerId);
+    // timerId 印出 3,那是瀏覽器發的「號碼牌」(第 3 個計時器),
+    // 跟倒數的 3 完全無關,純屬巧合。沒接住號碼牌就拆不掉炸彈。
+    // 另外號碼牌是「立刻」印出來的,第一次倒數要等一秒 —— 計時器不卡程式
+
+    // 練習 4:忘記清除會怎樣
+    // ⚠️ 這段會永遠跑下去,平時務必保持註解。實測跑到 11 還在數,
+    // 而且畫面完全正常、沒有任何錯誤 —— 這是安靜失敗,比 Day 7 的當機更難發現
+    let n = 0;
+    setInterval(() => {
+      n = n + 1;
+      console.log("我停不下來:", n);
+    }, 1000);
+    */
+
+    // 今天的結論:計時器用在「表現層」(震動、閃爍)可以,
+    // 用在「規則層」(中毒扣血、反擊延遲、限時)會破壞回合制,所以這個遊戲暫不使用。
+    // 受擊震動留到 Day 25(敵人反擊那天)實作。
+
+  </script>
+</body>
+</html>
+
+
+

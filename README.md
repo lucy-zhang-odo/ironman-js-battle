@@ -26,6 +26,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 14 — 用 JS 改樣式:style 駝峰命名、classList、四階段配色與陰影計數器(`day14/day14.html`)
 - [x] Day 15 — 表單與輸入:input.value、輸入驗證、找到並修補一個真實 XSS 漏洞(`day15/day15.html`)
 - [x] Day 16 — 亂數:Math.random、整數亂數公式、用統計驗證不確定系統(`day16/day16.html`)
+- [x] Day 17 — 計時器:setTimeout/setInterval、事件迴圈、決定不用在規則層(`day17/day17.html`)
 
 ## 技術棧
 
