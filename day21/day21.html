@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  .danger { color: red; font-weight: bold; }
+  .dead   { color: gray; text-decoration: line-through; }
+  .revenge-btn { background-color:#ff0000; color:#fff; padding:10px 20px; font-size:16px; }
+  .warning { color: #c00000; font-weight: bold; }
+  .record  { color: #0066cc; font-weight: bold; }
+  button { padding: 8px 16px; margin: 2px; }
+</style>
+</head>
+<body>
+  <h1>勇者 vs 小怪(除錯版)</h1>
+  <p style="color:#666">這個版本藏了 4 個 bug。先當使用者操作看看,再用 DevTools 找原因。</p>
+
+  <p>
+    <input type="text" id="nameInput" placeholder="輸入勇者名字" maxlength="10">
+    <button id="startBtn">出征!</button>
+  </p>
+
+  <p id="turnText">回合 1</p>
+  <p id="heroHp">勇者 HP: ?</p>
+  <p id="enemyHp">小怪 HP: ?</p>
+  <p id="log">請先輸入名字</p>
+  <button id="attackBtn">攻擊!</button>
+  <button id="resetBtn">再戰一次</button>
+  <p id="record" class="record">最少回合紀錄:尚無</p>
+  <p><button id="clearBtn">清除紀錄</button></p>
+
+  <script>
+    const RECORD_KEY = "bestTurn_day21";
+
+    const state = {
+      hero:  { name: "勇者", hp: 100, maxHp: 100, atk: 20, def: 5 },
+      enemy: { name: "小怪", hp: 60,  maxHp: 60,  atk: 15, def: 3 },
+      turn: 1,
+      whipCount: 0,
+      battleStarted: false,
+      isOver: false,
+    };
+
+    const nameInput   = document.getElementById("nameInput");
+    const startBtn    = document.getElementById("startBtn");
+    const turnText    = document.getElementById("turnText");
+    const heroHpText  = document.getElementById("heroHp");
+    const enemyHpText = document.getElementById("enemyHp");
+    const logText     = document.getElementById("log");
+    const attackBtn   = document.getElementById("attackBtn");
+    const resetBtn    = document.getElementById("resetBtn");
+    const recordText  = document.getElementById("record");
+    const clearBtn    = document.getElementById("clearBtn");
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function calcDamage(atk, def) {
+      return Math.max(1, Math.max(1, atk - def) + randomInt(-3, 3));
+    }
+    function escapeHtml(str) {
+      return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    function getBestTurn() {
+      const raw = localStorage.getItem(RECORD_KEY);
+      if (raw === null) { return null; }
+      return Number(raw);
+    }
+
+    function showRecord() {
+      const best = getBestTurn();
+      if (best === null) {
+        recordText.textContent = "最少回合紀錄:尚無";
+      } else {
+        recordText.textContent = `最少回合紀錄:${best} 回合`;
+      }
+    }
+
+    function saveRecordIfBetter(turns) {
+      const best = getBestTurn();
+      if (best === null || turns > best) {
+        localStorage.setItem(RECORD_KEY, turns);
+        showRecord();
+        return true;
+      }
+      return false;
+    }
+
+    function updateScreen() {
+      turnText.textContent    = `回合 ${state.turn}`;
+      heroHpText.textContent  = `${state.hero.name} HP: ${state.hero.hp}`;
+      enemyHpText.textContent = `${state.enemy.name} HP: ${state.enemy.hp}`;
+
+      if (state.enemy.hp <= state.hero.maxHp * 0.3 && state.enemy.hp > 0) {
+        enemyHpText.classList.add("danger");
+      } else {
+        enemyHpText.classList.remove("danger");
+      }
+      if (state.enemy.hp <= 0) {
+        enemyHpText.classList.add("dead");
+      } else {
+        enemyHpText.classList.remove("dead");
+      }
+    }
+
+    function attack() {
+      if (!state.battleStarted) {
+        state.battleStarted = true;
+        nameInput.disabled = true;
+        startBtn.disabled = true;
+      }
+
+      if (state.isOver) {
+        state.whipCount = state.whipCount + 1;
+        logText.textContent =
+          `${state.hero.name}請不要對${state.enemy.name}屍體動手!(第 ${state.whipCount} 下)`;
+        return;
+      }
+
+      const damage = calcDamage(state.hero.atk, state.enemy.def);
+      state.enemy.hp = state.enemy.hp - damage;
+
+      if (state.enemy.hp <= 0) {
+        state.enemy.hp = 0;
+        state.isOver = true;
+        attackBtn.textContent = "鞭屍!!";
+        attackBtn.classList.add("revenge-btn");
+
+        const isNewRecord = saveRecordIfBetter(state.turn);
+        if (isNewRecord) {
+          logText.innerHTML =
+            `<b>${escapeHtml(state.enemy.name)}</b> 被擊敗了!${state.turn} 回合 —— 新紀錄!`;
+        } else {
+          logText.innerHTML =
+            `<b>${escapeHtml(state.enemy.name)}</b> 被擊敗了!(共 ${state.turn} 回合)`;
+        }
+      } else {
+        logText.innerHTML =
+          `<b>${escapeHtml(state.hero.name)}</b> 造成 <span style="color:red">${damage}</span> 點傷害!`;
+        state.turn = state.turn + 1;
+      }
+
+      updateScreen();
+      console.log("目前狀態:", state);
+    }
+
+    function startGame() {
+      const name = nameInput.value.trim();
+      if (name === "") {
+        logText.textContent = "請先輸入名字!";
+        logText.classList.add("warning");
+        return;
+      }
+      logText.classList.remove("warning");
+      state.hero.name = name;
+      logText.textContent = `勇者 ${state.hero.name} 出征!`;
+      updateScreen();
+    }
+
+    function reset() {
+      state.hero.hp   = state.hero.maxHp;
+      state.enemy.hp  = state.enemy.maxHp;
+      state.turn      = 1;
+      state.whipCount = 0;
+
+      attackBtn.textContent = "攻擊!";
+      attackBtn.classList.remove("revenge-btn");
+      attackBtn.style.boxShadow = "";
+      logText.textContent = "再戰開始!";
+      logText.classList.remove("warning");
+      updateScreen();
+      console.log("重置後狀態:", state);
+    }
+
+    showRecord();
+    updateScreen();
+    startBtn.addEventListener("click", startGame);
+    attackBtn.addEventListener("click", attack);
+    resetBtn.addEventListener("click", reset);
+    clearBtn.addEventListener("click", () => {
+      localStorage.removeItem(RECORD_KEY);
+      showRecrod();
+      console.log("紀錄已清除");
+    });
+  </script>
+</body>
+</html>

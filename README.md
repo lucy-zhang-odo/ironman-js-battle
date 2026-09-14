@@ -27,6 +27,10 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 15 — 表單與輸入:input.value、輸入驗證、找到並修補一個真實 XSS 漏洞(`day15/day15.html`)
 - [x] Day 16 — 亂數:Math.random、整數亂數公式、用統計驗證不確定系統(`day16/day16.html`)
 - [x] Day 17 — 計時器:setTimeout/setInterval、事件迴圈、決定不用在規則層(`day17/day17.html`)
+- [x] Day 18 — 狀態管理:單一事實來源、state 物件、活參照陷阱放大版(`day18/`)
+- [x] Day 19 — 非同步:回呼地獄、Promise、async/await、卡住 vs 不卡住(`day19/`)
+- [x] Day 20 — localStorage:只能存字串、JSON 轉換、null 處理、資料安全邊界(`day20/`)
+- [x] Day 21 — 除錯:大聲 vs 安靜失敗、中斷點、四個 bug 實戰(`day21/`)
 
 ## 技術棧
 
