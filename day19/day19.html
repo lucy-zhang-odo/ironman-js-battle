@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head><style>body{font-family:sans-serif;padding:20px} button{padding:8px 16px;margin:4px}</style></head>
+<body>
+  <h1>Day 19:非同步練習</h1>
+  <p>打開主控台(F12),然後把下面程式碼裡的練習一個一個放開來跑。</p>
+  <hr>
+  <p>練習 5 專用:</p>
+  <button id="blockBtn">會卡住的等待(3 秒)</button>
+  <button id="asyncBtn">不會卡住的等待(3 秒)</button>
+  <button id="testBtn">我還能被點嗎?</button>
+  <p id="out">(結果會顯示在這裡)</p>
+
+  <script>
+    const out = document.getElementById("out");
+
+    // ===================================================================
+    // 練習 1:回呼地獄 —— 一件事接一件事,縮排一直往右退
+    // ===================================================================
+    /*
+    console.log("開始煮飯");
+    setTimeout(() => {
+      console.log("1. 洗米好了");
+      setTimeout(() => {
+        console.log("2. 下鍋了");
+        setTimeout(() => {
+          console.log("3. 煮好了");
+          setTimeout(() => {
+            console.log("4. 上菜!");
+              setTimeout(() => {
+              console.log("5. 我要開動了!");
+                setTimeout(() => {
+                console.log("6. 吃完收桌!");
+              }, 500);
+            }, 500);
+          }, 500);
+        }, 500);
+      }, 500);
+    }, 500);
+    // 觀察:每多一個步驟就多縮排一層。四步就這樣了,十步呢?
+    */
+
+
+    // ===================================================================
+    // 練習 2:Promise —— 同樣的事,變成一條直線
+    // ===================================================================
+    
+    // 先做一個工具:等待 ms 毫秒的「承諾」 這個練習我不太理解 ms跟message沒有被定義過但可以使用?
+    /*
+    function wait(ms, message) {  
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log(message);
+          resolve();          // 承諾兌現
+        }, ms);
+      });
+    }
+
+    console.log("開始煮飯");
+    wait(500, "1. 洗米好了") 
+      .then(() => wait(500, "2. 下鍋了"))
+      .then(() => wait(500, "3. 煮好了"))
+      .then(() => wait(500, "4. 上菜!"));
+      //then是什麼意思?
+    // 觀察:縮排不再往右退,四個步驟排成一直線
+    */
+
+
+    // ===================================================================
+    // 練習 3:async / await —— 讀起來像同步
+    // ===================================================================
+    
+    function wait(ms, message) {
+      return new Promise((resolve) => {
+        setTimeout(() => { console.log(message); resolve(); }, ms);
+      });
+    }
+
+    async function 煮飯() {  //可以直接寫中文嗎?
+      console.log("開始煮飯");
+      await wait(500, "1. 洗米好了");
+      await wait(500, "2. 下鍋了");
+      await wait(500, "3. 煮好了");
+      await wait(500, "4. 上菜!");
+      console.log("全部完成");
+    }
+    煮飯();
+    console.log("← 這行會先出現,因為 await 只暫停函式內部,不卡住外面");
+    // 觀察:最後這行的位置。await 沒有卡住整個程式
+    //整個出現速度超快明明跟練習2一樣設定了500ms但感覺速度更快
+    
+
+    // ===================================================================
+    // 練習 4:承諾跳票 —— reject 與 catch
+    // ===================================================================
+    /*
+    function 買飲料(有沒有錢) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (有沒有錢) {
+            resolve("珍奶一杯");       // 兌現
+          } else {
+            reject("錢不夠");          // 跳票
+          }
+        }, 500);
+      });
+    }
+
+    買飲料(true)
+      .then(飲料 => console.log("拿到:", 飲料))
+      .catch(原因 => console.log("失敗:", 原因));
+
+    買飲料(false)
+      .then(飲料 => console.log("拿到:", 飲料))
+      .catch(原因 => console.log("失敗:", 原因));
+
+    // async/await 版本的錯誤處理用 try/catch:
+    async function 試試看() {
+      try {
+        const 飲料 = await 買飲料(true); //走向看這個() 但他已經寫在try內了還有可能讓結果跑到catch 是不是應該放外面?
+        console.log("拿到:", 飲料);
+      } catch (原因) {
+        console.log("(await 版)失敗:", 原因);
+      }
+    }
+    試試看();
+    
+    */
+    /*
+    // ===================================================================
+    // 練習 5:卡住 vs 不卡住 —— 先猜再跑!
+    // 這個練習不用註解,直接點畫面上的按鈕
+    //
+    // 步驟:
+    //  1. 先點「會卡住的等待」,然後在 3 秒內拼命點「我還能被點嗎?」
+    //  2. 重新整理,再點「不會卡住的等待」,同樣在 3 秒內點「我還能被點嗎?」
+    //  3. 比較兩次的差別
+    // ===================================================================
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    document.getElementById("blockBtn").addEventListener("click", () => {
+      out.textContent = "開始卡住...";
+      const end = Date.now() + 3000;
+      while (Date.now() < end) {
+        // 這是一個真的「停下來等」的迴圈:它佔住唯一的那條執行緒不放
+      }
+      out.textContent = "卡住結束(剛剛畫面是不是動不了?)";
+    });
+
+    document.getElementById("asyncBtn").addEventListener("click", async () => {
+      out.textContent = "開始非同步等待...";
+      await sleep(3000);
+      out.textContent = "非同步等待結束(剛剛還能點別的吧?)";
+    });
+
+    let clicks = 0;
+    document.getElementById("testBtn").addEventListener("click", () => {
+      clicks = clicks + 1;
+      console.log("我被點了", clicks, "次");
+    });
+    */
+  </script>
+</body>
+</html>
