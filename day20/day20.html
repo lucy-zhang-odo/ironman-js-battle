@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  .danger { color: red; font-weight: bold; }
+  .dead   { color: gray; text-decoration: line-through; }
+  .revenge-btn { background-color:#ff0000; color:#fff; padding:10px 20px; font-size:16px; }
+  .warning { color: #c00000; font-weight: bold; }
+  .record  { color: #0066cc; font-weight: bold; }
+  button { padding: 8px 16px; margin: 2px; }
+</style>
+</head>
+<body>
+  <h1>勇者 vs 小怪</h1>
+
+  <p>
+    <input type="text" id="nameInput" placeholder="輸入勇者名字" maxlength="10">
+    <button id="startBtn">出征!</button>
+  </p>
+
+  <p id="turnText">回合 1</p>
+  <p id="heroHp">勇者 HP: ?</p>
+  <p id="enemyHp">小怪 HP: ?</p>
+  <p id="log">請先輸入名字</p>
+  <button id="attackBtn">攻擊!</button>
+  <button id="resetBtn">再戰一次</button>
+  <p id="record" class="record">最少回合紀錄:尚無</p>
+  <p><button id="clearBtn">清除紀錄</button></p>
+
+  <script>
+    // ###################################################################
+    // 上半部:localStorage 實驗區(一次放開一個練習來跑)
+    // ###################################################################
+
+    // ---- 練習 1:存與讀(只能存字串) ----
+    /*
+    localStorage.setItem("玩家名字", "小明");
+    console.log("讀出來:", localStorage.getItem("玩家名字"));
+    console.log("不存在的 key:", localStorage.getItem("沒這個東西"));  // null
+    */
+
+    // ---- 練習 2:直接存物件會發生什麼事?先猜再跑 ----
+    /*
+    const hero = { name: "勇者", hp: 100 };
+    localStorage.setItem("hero1", hero);
+    const 讀回來 = localStorage.getItem("hero1");
+    console.log("讀回來的值:", 讀回來);        //hero1:{ name: "勇者", hp: 100 }
+    console.log("型別:", typeof 讀回來);      //字串
+    console.log("想拿 name:", 讀回來.name);   // ← 會是什麼? 找不到吧? 少套一層?
+    
+    */
+    // ---- 練習 3:用 JSON 正確地存物件 ----
+    /*
+    const hero2 = { name: "勇者", hp: 100, skills: ["火球術", "治療"] };
+    localStorage.setItem("hero2", JSON.stringify(hero2));
+    console.log("倉庫裡實際存的:", localStorage.getItem("hero2"));
+
+    const 還原 = JSON.parse(localStorage.getItem("hero2"));
+    console.log("還原後:", 還原);
+    console.log("拿 name:", 還原.name);
+    console.log("拿 name:", 還原.hp);
+    console.log("拿陣列第一項:", 還原.skills[0]);
+    */
+    
+    // ---- 練習 4:第一次沒資料的處理 ----
+    /*
+    localStorage.removeItem("bestTurn");            // 先確保沒有資料
+    const best = localStorage.getItem("bestTurn");
+    console.log("第一次讀:", best, typeof best);    // null object
+
+    console.log("直接相加:", best + 1);              // ← 會是什麼? 1 (因為null會被1直接取代)
+    console.log("轉數字後:", Number(best) + 1);      // ← 又會是什麼? 1 ( +1=1)
+    
+    */
+    // ---- 練習 5:存進去的數字,拿出來是字串 ----
+    /*
+    localStorage.setItem("turn", 5);
+    const t = localStorage.getItem("turn");
+    console.log(t, typeof t);        // "5" string
+    console.log("字串相加:", t + 1);
+    console.log("轉數字:", Number(t) + 1);
+    */
+
+
+    // ###################################################################
+    // 下半部:整合進遊戲
+    // ###################################################################
+
+    const RECORD_KEY = "bestTurn";   // 統一管理 key 名稱,避免打錯字
+
+    const state = {
+      hero:  { name: "勇者", hp: 100, maxHp: 100, atk: 20, def: 5 },
+      enemy: { name: "小怪", hp: 60,  maxHp: 60,  atk: 15, def: 3 },
+      turn: 1,
+      whipCount: 0,
+      battleStarted: false,
+      isOver: false,
+    };
+
+    const nameInput   = document.getElementById("nameInput");
+    const startBtn    = document.getElementById("startBtn");
+    const turnText    = document.getElementById("turnText");
+    const heroHpText  = document.getElementById("heroHp");
+    const enemyHpText = document.getElementById("enemyHp");
+    const logText     = document.getElementById("log");
+    const attackBtn   = document.getElementById("attackBtn");
+    const resetBtn    = document.getElementById("resetBtn");
+    const recordText  = document.getElementById("record");
+    const clearBtn    = document.getElementById("clearBtn");
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function calcDamage(atk, def) {
+      return Math.max(1, Math.max(1, atk - def) + randomInt(-3, 3));
+    }
+    function escapeHtml(str) {
+      return str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    // ---- 紀錄相關 ----
+    function getBestTurn() {
+      const raw = localStorage.getItem(RECORD_KEY);
+      if (raw === null) {
+        return null;            // 還沒有任何紀錄
+      }
+      return Number(raw);       // 記得轉數字
+    }
+
+    function showRecord() {
+      const best = getBestTurn();
+      if (best === null) {
+        recordText.textContent = "最少回合紀錄:尚無";
+      } else {
+        recordText.textContent = `最少回合紀錄:${best} 回合`;
+      }
+    }
+
+    function saveRecordIfBetter(turns) {
+      const best = getBestTurn();
+      if (best === null || turns < best) {
+        localStorage.setItem(RECORD_KEY, turns);
+        showRecord();
+        return true;            // 破紀錄了
+      }
+      return false;
+    }
+
+    function updateScreen() {
+      turnText.textContent    = `回合 ${state.turn}`;
+      heroHpText.textContent  = `${state.hero.name} HP: ${state.hero.hp}`;
+      enemyHpText.textContent = `${state.enemy.name} HP: ${state.enemy.hp}`;
+
+      if (state.enemy.hp <= state.enemy.maxHp * 0.3 && state.enemy.hp > 0) {
+        enemyHpText.classList.add("danger");
+      } else {
+        enemyHpText.classList.remove("danger");
+      }
+      if (state.enemy.hp <= 0) {
+        enemyHpText.classList.add("dead");
+      } else {
+        enemyHpText.classList.remove("dead");
+      }
+    }
+
+    function attack() {
+      if (!state.battleStarted) {
+        state.battleStarted = true;
+        nameInput.disabled = true;
+        startBtn.disabled = true;
+      }
+
+      if (state.isOver) {
+        state.whipCount = state.whipCount + 1;
+        logText.textContent =
+          `${state.hero.name}請不要對${state.enemy.name}屍體動手!(第 ${state.whipCount} 下)`;
+        return;
+      }
+
+      const damage = calcDamage(state.hero.atk, state.enemy.def);
+      state.enemy.hp = state.enemy.hp - damage;
+
+      if (state.enemy.hp <= 0) {
+        state.enemy.hp = 0;
+        state.isOver = true;
+        attackBtn.textContent = "鞭屍!!";
+        attackBtn.classList.add("revenge-btn");
+
+        const isNewRecord = saveRecordIfBetter(state.turn);
+        if (isNewRecord) {
+          logText.innerHTML =
+            `<b>${escapeHtml(state.enemy.name)}</b> 被擊敗了!${state.turn} 回合 —— 新紀錄!`;
+        } else {
+          logText.innerHTML =
+            `<b>${escapeHtml(state.enemy.name)}</b> 被擊敗了!(共 ${state.turn} 回合)`;
+        }
+      } else {
+        logText.innerHTML =
+          `<b>${escapeHtml(state.hero.name)}</b> 造成 <span style="color:red">${damage}</span> 點傷害!`;
+        state.turn = state.turn + 1;
+      }
+
+      updateScreen();
+      console.log("目前狀態:", state);
+    }
+
+    function startGame() {
+      const name = nameInput.value.trim();
+      if (name === "") {
+        logText.textContent = "請先輸入名字!";
+        logText.classList.add("warning");
+        return;
+      }
+      if (name.length > 10) {
+        logText.textContent = `名字太長了(${name.length} 字),請縮短到 10 字以內`;
+        logText.classList.add("warning");
+        return;
+      }
+      logText.classList.remove("warning");
+      state.hero.name = name;
+      logText.textContent = `勇者 ${state.hero.name} 出征!`;
+      updateScreen();
+    }
+
+    function reset() {
+      state.hero.hp   = state.hero.maxHp;
+      state.enemy.hp  = state.enemy.maxHp;
+      state.turn      = 1;
+      state.whipCount = 0;
+      state.isOver    = false;
+
+      // battleStarted 一開始我沒重置,結果兩條「重新開始」的路徑行為不一致:
+      //   重開瀏覽器 → 名字可以改
+      //   按再戰一次 → 名字不能改
+      // 同樣是重來一場卻有兩種結果,而且沒有理由。所以要重置 ——
+      // 而且狀態和畫面要「一起」重置,只改旗標的話輸入框還是灰的(Day 11 的教訓)
+      state.battleStarted = false;
+      nameInput.disabled  = false;
+      startBtn.disabled   = false;
+
+      attackBtn.textContent = "攻擊!";
+      attackBtn.classList.remove("revenge-btn");
+      attackBtn.style.boxShadow = "";
+      logText.textContent = "再戰開始!";
+      logText.classList.remove("warning");
+      updateScreen();
+      console.log("重置後狀態:", state);
+    }
+
+    showRecord();
+    updateScreen();
+    startBtn.addEventListener("click", startGame);
+    attackBtn.addEventListener("click", attack);
+    resetBtn.addEventListener("click", reset);
+    clearBtn.addEventListener("click", () => {
+      localStorage.removeItem(RECORD_KEY);
+      showRecord();
+      console.log("紀錄已清除");
+    });
+  </script>
+</body>
+</html>
