@@ -31,6 +31,8 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 19 — 非同步:回呼地獄、Promise、async/await、卡住 vs 不卡住(`day19/`)
 - [x] Day 20 — localStorage:只能存字串、JSON 轉換、null 處理、資料安全邊界(`day20/`)
 - [x] Day 21 — 除錯:大聲 vs 安靜失敗、中斷點、四個 bug 實戰(`day21/`)
+- [x] Day 22 — 第二階段回顧 + [遊戲流程圖](遊戲流程圖.md)
+- [x] Day 23 — 專案骨架:拆成 index.html / style.css / game.js、血條(`day23/`)
 
 ## 技術棧
 
