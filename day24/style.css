@@ -1,0 +1,136 @@
+/* ===== 基本版面 ===== */
+body {
+  font-family: "Microsoft JhengHei", sans-serif;
+  background-color: #f4f1ea;
+  color: #2b2b2b;
+  margin: 0;
+  padding: 24px 16px;
+  transition: background-color 0.4s;
+}
+
+.game {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+/* ===== 開場區 ===== */
+#setup {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 8px 10px;
+  font-size: 15px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+button {
+  padding: 9px 18px;
+  font-size: 15px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background-color: #eee;
+}
+
+button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* ===== 戰鬥區 ===== */
+.turn {
+  text-align: center;
+  color: #777;
+  letter-spacing: 2px;
+}
+
+.fighter {
+  margin-bottom: 14px;
+}
+
+.fighter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.fighter-name {
+  font-weight: bold;
+}
+
+.fighter-hp {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 血條:外層是軌道,內層是實際血量 */
+.hp-bar {
+  height: 18px;
+  background-color: #ddd;
+  border-radius: 9px;
+  overflow: hidden;     /* 內層超出去的部分切掉 */
+}
+
+.hp-fill {
+  height: 100%;
+  width: 100%;
+  transition: width 0.3s;   /* 血量變化時平滑過渡,不是瞬間跳 */
+}
+
+.hp-fill.hero  { background-color: #4a8f4a; }
+.hp-fill.enemy { background-color: #a34242; }
+
+/* 血量低的時候整條變黃/變紅(由 JS 加 class) */
+.hp-fill.warn   { background-color: #e5ab22; }
+.hp-fill.danger { background-color: #ff0000ca; }
+
+.vs {
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin: 6px 0;
+}
+
+/* ===== 訊息與控制 ===== */
+#log {
+  min-height: 24px;          /* 固定高度,訊息長短不會讓版面跳動 */
+  padding: 10px 12px;
+  background-color: #fff;
+  border-left: 4px solid #999;
+  border-radius: 3px;
+}
+
+#controls {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.record {
+  text-align: center;
+  color: #2a6496;
+  font-weight: bold;
+}
+
+/* ===== 狀態樣式 ===== */
+.warning { color: #c00000; font-weight: bold; }
+.dead    { color: gray; text-decoration: line-through; }
+
+.revenge-btn {
+  background-color: #ff0000;
+  color: #ffffff;
+  border-color: #900;
+}

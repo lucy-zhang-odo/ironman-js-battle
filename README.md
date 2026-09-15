@@ -33,6 +33,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 21 — 除錯:大聲 vs 安靜失敗、中斷點、四個 bug 實戰(`day21/`)
 - [x] Day 22 — 第二階段回顧 + [遊戲流程圖](遊戲流程圖.md)
 - [x] Day 23 — 專案骨架:拆成 index.html / style.css / game.js、血條(`day23/`)
+- [x] Day 24 — 敵人反擊:雙向勝負判定、數值平衡、1000 場模擬器(`day24/`)
 
 ## 技術棧
 

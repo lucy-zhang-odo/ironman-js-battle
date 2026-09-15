@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>勇者 vs 小怪</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game">
+    <h1>勇者 vs 小怪</h1>
+
+    <!-- 開場:輸入名字 -->
+    <section id="setup">
+      <input type="text" id="nameInput" placeholder="輸入勇者名字" maxlength="10">
+      <button id="startBtn">出征!</button>
+    </section>
+
+    <!-- 戰鬥區:雙方狀態 -->
+    <section id="battle">
+      <p class="turn" id="turnText">回合 1</p>
+
+      <div class="fighter">
+        <div class="fighter-head">
+          <span class="fighter-name" id="heroName">勇者</span>
+          <span class="fighter-hp" id="heroHpText">100 / 100</span>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill hero" id="heroHpFill"></div>
+        </div>
+      </div>
+
+      <div class="vs">VS</div>
+
+      <div class="fighter">
+        <div class="fighter-head">
+          <span class="fighter-name" id="enemyName">小怪</span>
+          <span class="fighter-hp" id="enemyHpText">60 / 60</span>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill enemy" id="enemyHpFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 戰鬥訊息 -->
+    <p id="log">請先輸入名字,然後按下出征!</p>
+
+    <!-- 操作按鈕 -->
+    <section id="controls">
+      <button id="attackBtn">攻擊!</button>
+      <button id="resetBtn">再戰一次</button>
+    </section>
+
+    <!-- 紀錄 -->
+    <p id="record" class="record">最少回合紀錄:尚無</p>
+  </div>
+
+  <!-- script 放在最後:Day 10 的教訓,元素要先存在才抓得到 -->
+  <script src="game.js"></script>
+</body>
+</html>
