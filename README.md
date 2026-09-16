@@ -34,6 +34,7 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 - [x] Day 22 — 第二階段回顧 + [遊戲流程圖](遊戲流程圖.md)
 - [x] Day 23 — 專案骨架:拆成 index.html / style.css / game.js、血條(`day23/`)
 - [x] Day 24 — 敵人反擊:雙向勝負判定、數值平衡、1000 場模擬器(`day24/`)
+- [x] Day 25 — 受擊震動:CSS 動畫、演出節奏、戰鬥紀錄、非同步競態(`day25/`)
 
 ## 技術棧
 

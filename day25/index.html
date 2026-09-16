@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>勇者 vs 小怪</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game">
+    <h1>勇者 vs 小怪</h1>
+
+    <section id="setup">
+      <input type="text" id="nameInput" placeholder="輸入勇者名字" maxlength="10">
+      <button id="startBtn">出征!</button>
+    </section>
+
+    <section id="battle">
+      <p class="turn" id="turnText">回合 1</p>
+
+      <!-- 加了 id:震動要作用在整個角色區塊,不只是血條 -->
+      <div class="fighter" id="heroBox">
+        <div class="fighter-head">
+          <span class="fighter-name" id="heroName">勇者</span>
+          <span class="fighter-hp" id="heroHpText">100 / 100</span>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill hero" id="heroHpFill"></div>
+        </div>
+      </div>
+
+      <div class="vs">VS</div>
+
+      <div class="fighter" id="enemyBox">
+        <div class="fighter-head">
+          <span class="fighter-name" id="enemyName">小怪</span>
+          <span class="fighter-hp" id="enemyHpText">60 / 60</span>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill enemy" id="enemyHpFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 戰鬥紀錄:一筆一筆往下累積,不再覆蓋 -->
+    <div id="log">
+      <div class="log-line">請先輸入名字,然後按下出征!</div>
+    </div>
+
+    <section id="controls">
+      <button id="attackBtn">攻擊!</button>
+      <button id="resetBtn">再戰一次</button>
+    </section>
+
+    <p id="record" class="record">最少回合紀錄:尚無</p>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
