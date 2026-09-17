@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>勇者 vs 小怪</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game">
+    <h1>勇者 vs 小怪</h1>
+
+    <!-- 遊戲說明:用 <details> 做摺疊,不需要任何 JavaScript -->
+    <details id="howto">
+      <summary>怎麼玩?</summary>
+      <ul>
+        <li>輸入勇者名字(1~10 字),按下<b>出征</b>開始</li>
+        <li>按一次<b>攻擊</b>等於一個回合:你打小怪一下,小怪打你一下</li>
+        <li>傷害每次都會有些浮動,同樣的攻擊力不保證同樣的結果</li>
+        <li>血條會隨血量變色:六成以下變黃,三成以下變紅</li>
+        <li>目標:<b>用最少的回合打倒小怪</b>,紀錄會被保存下來</li>
+        <li>小怪也會反擊 —— 勇者是有可能倒下的</li>
+        <li>每次<b>再戰一次</b>都要重新按出征,順便可以改名字</li>
+      </ul>
+    </details>
+
+    <section id="setup">
+      <input type="text" id="nameInput" placeholder="輸入勇者名字" maxlength="10">
+      <button id="startBtn">出征!</button>
+    </section>
+
+    <section id="battle">
+      <p class="turn" id="turnText">回合 1</p>
+
+      <div class="fighter" id="heroBox">
+        <div class="fighter-head">
+          <span class="fighter-name" id="heroName">勇者</span>
+          <span class="fighter-hp" id="heroHpText">100 / 100</span>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill hero" id="heroHpFill"></div>
+        </div>
+      </div>
+
+      <div class="vs">VS</div>
+
+      <div class="fighter" id="enemyBox">
+        <div class="fighter-head">
+          <span class="fighter-name" id="enemyName">小怪</span>
+          <span class="fighter-hp" id="enemyHpText">60 / 60</span>
+        </div>
+        <div class="hp-bar">
+          <div class="hp-fill enemy" id="enemyHpFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 結果橫幅:平常隱藏,結束時才出現。
+         用 hidden 屬性而不是把它蓋在畫面上 —— 蓋住的話就按不到鞭屍了 -->
+    <div id="result" class="result" hidden>
+      <div class="result-title" id="resultTitle">勝利!</div>
+      <div class="result-detail" id="resultDetail"></div>
+    </div>
+
+    <div id="log">
+      <div class="log-line">輸入名字後按下出征,就可以開始了</div>
+    </div>
+
+    <section id="controls">
+      <button id="attackBtn">攻擊!</button>
+      <button id="resetBtn">再戰一次</button>
+    </section>
+
+    <p id="record" class="record">最少回合紀錄:尚無</p>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

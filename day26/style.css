@@ -1,0 +1,261 @@
+/* ===== 基本版面 ===== */
+body {
+  font-family: "Microsoft JhengHei", sans-serif;
+  background-color: #f4f1ea;
+  color: #2b2b2b;
+  margin: 0;
+  padding: 24px 16px;
+  transition: background-color 0.4s;
+
+  /* 震動幅度調太大時,元素會滑出畫面外、逼出一條水平捲軸。
+     動畫本身沒錯,但它把版面撐壞了 —— 這行負責把溢出的部分切掉 */
+  overflow-x: hidden;
+}
+
+.game {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+/* ===== 遊戲說明 ===== */
+/* <details> 是 HTML 原生的摺疊區塊,點 summary 就會展開,不需要任何 JavaScript */
+#howto {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+#howto summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #2a6496;
+}
+
+#howto ul {
+  margin: 10px 0 4px;
+  padding-left: 20px;
+  line-height: 1.8;
+  color: #444;
+}
+
+/* ===== 結果橫幅 ===== */
+.result {
+  text-align: center;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 2px solid;
+  animation: resultIn 0.4s ease-out;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.result-detail {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.result.win {
+  background-color: #eaf6ea;
+  border-color: #4a8f4a;
+  color: #1a6b1a;
+}
+
+.result.lose {
+  background-color: #fbeaea;
+  border-color: #a34242;
+  color: #8c2020;
+}
+
+@keyframes resultIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 開場區 ===== */
+#setup {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 8px 10px;
+  font-size: 15px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+button {
+  padding: 9px 18px;
+  font-size: 15px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) { background-color: #eee; }
+button:disabled { color: #aaa; cursor: not-allowed; }
+
+/* 演出進行中:視覺上變淡表示「現在不是時候」,
+   但不能用 disabled —— disabled 的按鈕連點擊事件都收不到,
+   那就沒機會回一句「請不要偷襲!」 */
+button.busy {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+/* ===== 戰鬥區 ===== */
+.turn {
+  text-align: center;
+  color: #777;
+  letter-spacing: 2px;
+}
+
+.fighter { margin-bottom: 14px; }
+
+.fighter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.fighter-name { font-weight: bold; }
+
+.fighter-hp {
+  font-size: 14px;
+  color: #666;
+  display: inline-block;   /* transform 對 inline 元素無效,要先變成 inline-block */
+}
+
+.hp-bar {
+  height: 18px;
+  background-color: #ddd;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.hp-fill {
+  height: 100%;
+  width: 100%;
+  transition: width 0.3s;
+}
+
+.hp-fill.hero  { background-color: #4a8f4a; }
+.hp-fill.enemy { background-color: #a34242; }
+.hp-fill.warn   { background-color: #e5ab22; }
+.hp-fill.danger { background-color: #ff0000ca; }
+
+.vs {
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin: 6px 0;
+}
+
+/* ===== 受擊效果 ===== */
+
+/* 震動:左右來回,幅度逐漸變小,像被打了一下之後餘震 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%      { transform: translateX(-20px); }
+  30%      { transform: translateX(16px); }
+  45%      { transform: translateX(-12px); }
+  60%      { transform: translateX(8px); }
+  75%      { transform: translateX(-4px); }
+}
+
+.fighter.shake {
+  animation: shake 0.35s ease-in-out;
+}
+
+/* 血量數字閃一下:變紅、放大再縮回 */
+@keyframes hpFlash {
+  0%   { color: #c0392b; transform: scale(1.4); }
+  100% { color: #666;    transform: scale(1); }
+}
+
+.fighter-hp.flash {
+  animation: hpFlash 0.45s ease-out;
+}
+
+/* 無障礙:有些人對動畫敏感(暈眩、前庭功能異常)。
+   系統設定「減少動態效果」時,關掉所有動畫 —— 資訊照樣看得到,只是不動 */
+@media (prefers-reduced-motion: reduce) {
+  .fighter.shake,
+  .fighter-hp.flash,
+  .hp-fill,
+  .result {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ===== 訊息與控制 ===== */
+/* 戰鬥紀錄:固定高度的捲動區,新的往下加 */
+#log {
+  height: 140px;
+  overflow-y: auto;
+  padding: 8px 12px;
+  background-color: #fff;
+  border-left: 4px solid #999;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.log-line {
+  padding: 2px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.log-line:last-child {
+  border-bottom: none;
+}
+
+/* 回合標記:讓紀錄看得出分段 */
+.log-turn {
+  color: #999;
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+/* 結果那一行特別標出來 */
+.log-line.result-win  { color: #1a7a1a; font-weight: bold; }
+.log-line.log-warning { color: #c00000; font-weight: bold; }
+.log-line.result-lose { color: #c00000; font-weight: bold; }
+
+#controls {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.record {
+  text-align: center;
+  color: #2a6496;
+  font-weight: bold;
+}
+
+/* ===== 狀態樣式 ===== */
+.warning { color: #c00000; font-weight: bold; }
+.dead    { color: gray; text-decoration: line-through; }
+
+.revenge-btn {
+  background-color: #ff0000;
+  color: #ffffff;
+  border-color: #900;
+}
