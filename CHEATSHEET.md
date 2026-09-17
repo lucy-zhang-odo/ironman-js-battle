@@ -1,4 +1,4 @@
-# JavaScript 速查表(Day 1–15)
+# JavaScript 速查表(Day 1–27)
 
 依「我想做什麼」分類,不是依語法分類——卡住時從這裡找比翻文章快。
 
@@ -248,6 +248,143 @@ if (name.length > 10) { /* 拒絕 */ return; }  // 3. 長度
 | 白名單 vs 黑名單 | 「只允許我列出的」比「禁止我想到的壞東西」可靠 |
 | **註解會過期** | 「這裡沒有使用者輸入所以安全」可能明天就不成立 |
 
+## 亂數
+
+```js
+Math.random()                                        // 0 ~ 0.999...
+Math.floor(x)                                        // 無條件捨去
+Math.max(a, b) / Math.min(a, b)                      // 取大 / 取小(常用來設上下限)
+
+function randomInt(min, max) {                       // min~max 的整數,兩端都含
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+```
+
+⚠️ 要乘的是「**有幾個可能的值**」(`max - min + 1`),不是最大值。少了 `+1`,最大值永遠不會出現,而且其他值的機率會被拉高。
+
+⚠️ 驗證亂數要**跑上千次看分布**,不能看單次結果。分布不完全平均才正常。
+
+## 計時器與非同步
+
+```js
+const id = setTimeout(fn, ms);     // 等一段時間跑一次
+const id = setInterval(fn, ms);    // 每隔一段時間重複
+clearTimeout(id) / clearInterval(id);   // 剪線,一定要記得
+
+await sleep(1000);                 // 只暫停這個 async 函式,不卡住畫面
+```
+
+| 觀念 | 說明 |
+|---|---|
+| `setTimeout(fn, 0)` | **不會插隊**,排到待辦清單最後面(事件迴圈) |
+| `setInterval` | 不會自己停,一定要有人 `clearInterval` |
+| 同步的等待(`while` 卡時間) | **凍住整個畫面**,使用者會以為壞了 |
+| `async/await` | 讀起來像同步,但只暫停函式內部 |
+
+⚠️ **排隊中的回呼不知道後來發生了什麼事** —— 它拿的是排隊當下的狀態。狀態可能已經變了(例如敵人已經死了)。
+
+## 狀態管理
+
+```js
+const state = { hero: {...}, enemy: {...}, turn: 1, isOver: false, result: null };
+```
+
+| 原則 | 說明 |
+|---|---|
+| 單一事實來源 | 每個資訊只有一個權威存放位置 |
+| 用旗標記錄狀態 | `state.isOver` 比從 `hp <= 0` 反推可靠 |
+| **基礎值永遠不動** | 增益效果存另一份清單,要用時才加總;重置只要清空清單 |
+| 重置要對照清單 | 每加一個狀態欄位,就回去檢查重置有沒有漏 |
+
+```js
+// 基礎值 vs 有效值
+state.enemy.atk = 15;                       // 基礎,不動
+state.buffs = [{target:"enemy", type:"atk", value:5, turnsLeft:3}];
+function effectiveAtk(who) {                // 要用的時候才算
+  return state[who].atk + sumBuff(who, "atk");
+}
+```
+
+## localStorage
+
+```js
+localStorage.setItem("key", "值");
+localStorage.getItem("key");          // 找不到回傳 null
+localStorage.removeItem("key");
+localStorage.clear();
+
+localStorage.setItem("hero", JSON.stringify(物件));    // 物件 → 字串
+const hero = JSON.parse(localStorage.getItem("hero")); // 字串 → 物件
+```
+
+⚠️ **只能存字串**。直接存物件會變成 `"[object Object]"`,資料整包消失而且不報錯。
+⚠️ 存進去的數字拿出來是字串,一律先 `Number()`。
+⚠️ 用 `null` 表示「沒有資料」,不要用 999 這種魔術數字假裝。
+⚠️ 玩家可以在 DevTools「應用程式」分頁直接改 —— 它是方便,不是安全。判斷標準是「**改了之後誰受害**」。
+
+## CSS 動畫
+
+```css
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%      { transform: translateX(-20px); }
+}
+.box.shake { animation: shake 0.35s ease-in-out; }
+
+@media (prefers-reduced-motion: reduce) {   /* 尊重「減少動態效果」設定 */
+  .box.shake { animation: none; }
+}
+```
+
+```js
+// 動畫不會重播的解法:先移除 → 強制重排 → 再加上
+function playEffect(el, className) {
+  el.classList.remove(className);
+  void el.offsetWidth;
+  el.classList.add(className);
+}
+```
+
+⚠️ `transform` 對 `inline` 元素無效,要先 `display: inline-block`。
+⚠️ 幅度太大會撐出水平捲軸,`overflow-x: hidden` 收掉。
+
+## 常用的 DOM 補充
+
+```js
+const el = document.createElement("div");    // 造新元素
+el.textContent = "安全的文字";
+parent.appendChild(el);                      // 掛進去
+parent.innerHTML = "";                       // 清空
+el.scrollTop = el.scrollHeight;              // 捲到最底
+
+resultBox.hidden = true;     // 比 style.display = "none" 更語意化
+btn.disabled = true;         // ⚠️ disabled 的按鈕「連點擊事件都收不到」
+```
+
+⚠️ 想「擋下操作並說明原因」不能用 `disabled` —— 要用旗標擋,按鈕才收得到點擊。
+暫時性的阻擋用旗標,永久性的(例如死亡)才用 `disabled`。
+
+```html
+<details><summary>怎麼玩?</summary>...</details>   <!-- 原生摺疊,零 JS -->
+```
+
+## 除錯工具
+
+```js
+console.log(x);        console.warn(x);      console.error(x);
+console.table(陣列);    // 表格化,看清單超好用
+console.count("標記");  // 自動計數
+debugger;              // 等於用程式碼設中斷點
+```
+
+| 工具 | 適合什麼時候 |
+|---|---|
+| `console.log` | 我猜是這個變數,印出來確認 |
+| 中斷點(Sources 點行號) | 不知道哪裡錯,想停下來看全部變數 |
+| 「在例外狀況時暫停」 | 有紅字,想直接跳到出錯那一行 |
+
+⚠️ 在高頻呼叫的函式裡 `console.log` 會瞬間灌爆主控台。
+
 ## 錯誤訊息對照表
 
 | 錯誤訊息 | 意思 | 常見原因 |
@@ -291,3 +428,10 @@ if (name.length > 10) { /* 拒絕 */ return; }  // 3. 長度
 | `console.log(元素)` 顯示的文字跟當時不符 | 活參照 |
 | 使用者輸入的標籤被解析了 | 某個出口用了 `innerHTML` 而沒轉義(而且不會報錯) |
 | 一顆按鈕塞進另一顆按鈕還能點 | 事件冒泡救了它,但 HTML 結構是違法的 |
+| 物件存進 localStorage 變成 `[object Object]` | 它只能存字串,而且不會告訴你 |
+| 忘記 `clearInterval` 的計時器在背景永遠跑 | 沒有錯誤、沒有當機,只是一直消耗資源 |
+| 動畫只播第一次 | class 已經在了,再 add 一次 CSS 認為「狀態沒變」 |
+| `width: -50%` 沒反應 | 無效的 CSS 值會被瀏覽器**直接忽略**,不報錯 |
+| 亂數少了 `+1`,最大值永遠不出現 | 只有統計才看得出來 |
+| 排隊中的動畫在遊戲結束後才執行 | 它拿的是排隊當下的狀態,不是現在的 |
+| 測試工具和遊戲規則寫成兩份,結果對不上 | 改了一邊忘了另一邊,測出來的都是假的 |
