@@ -4,9 +4,35 @@ QA 的 JavaScript 初心之路:30 天從零學會 JavaScript,做出一個能玩�
 
 這是 [2026 iThome 鐵人賽](https://ithelp.ithome.com.tw/2026ironman/) JavaScript 組參賽作品的程式碼倉庫。
 
+## 🎮 直接玩玩看
+
+**https://lucy-zhang-odo.github.io/ironman-js-battle/**
+
+不用安裝任何東西,手機也可以。
+
 ## 關於這個專案
 
 一名軟體測試工程師(QA),從 0 開始的 JavaScript 學習之路。目標是 30 天後做出一個能玩的回合制戰鬥小遊戲《勇者 vs 小怪》,並部署上線讓大家都能玩玩看。
+
+## 遊戲內容
+
+- 回合制戰鬥:一次點擊 = 你打牠一下、牠打你一下
+- 傷害浮動、血條、受擊震動、戰鬥紀錄
+- **骰子系統**:六個面,奇數幫你、偶數幫敵人,還有三回合冷卻
+- 最少回合紀錄(存在瀏覽器裡)
+- 自訂勇者名字、勝敗結果畫面、手機版排版
+
+## 專案結構
+
+```
+/                 ← 部署版本(GitHub Pages 讀這裡)
+  index.html
+  style.css
+  game.js
+day01/ ~ day28/   ← 每天的練習與當天版本
+CHEATSHEET.md     ← 30 天累積的 JavaScript 速查表
+遊戲流程圖.md      ← 遊戲邏輯與狀態設計
+```
 
 ## 進度
 
