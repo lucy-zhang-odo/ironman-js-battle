@@ -64,6 +64,8 @@ CHEATSHEET.md     ← 30 天累積的 JavaScript 速查表
 - [x] Day 26 — 開場與結果:遊戲說明、輸入把關、結果橫幅(`day26/`)
 - [x] Day 27 — 骰子系統:增益/減益、基礎值 vs 有效值、兩輪平衡測試(`day27/`)
 - [x] Day 28 — 收尾:CSS 變數化、手機版、無障礙細節(`day28/`)
+- [x] Day 29 — 部署到 GitHub Pages
+- [x] Day 30 — 完賽:兩個彩蛋(`day30/`)
 
 ## 技術棧
 
